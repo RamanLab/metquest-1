@@ -292,8 +292,12 @@ def _populate_table(rxns, temp_rxn_list_current, currentcolumnidx):
                     if succmets in pathway_table:
                         if succmets in metabs_in_cycle:
                             if succmets in cyclic_pathways:
-                                cyclic_pathways[succmets].update(
-                                    {len(reaction_combntn): [list(reaction_combntn)]})
+                                # multiple reaction_combntn sets may exist the metabolite in a column k, check whether cmbnt exists before appending
+                                if not any(set(reaction_combntn) == existing_set for existing_set in cyclic_pathways[succmets].get(len(reaction_combntn), [])):
+                                    cyclic_pathways[succmets].setdefault(len(reaction_combntn), []).append(set(reaction_combntn))
+                                # change from .update to .setdefault method
+                                # cyclic_pathways[succmets].update(
+                                #     {len(reaction_combntn): [list(reaction_combntn)]})
                             else:
                                 cyclic_pathways[succmets] = \
                                     {len(reaction_combntn): [list(reaction_combntn)]}
